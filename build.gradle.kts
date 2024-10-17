@@ -21,9 +21,20 @@ configurations {
 
 repositories {
 	mavenCentral()
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/Pedrodeforonda/printScript-ingsis")
+        credentials {
+            username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME_GITHUB") as String?
+            password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN_GITHUB") as String?
+        }
+    }
 }
 
 dependencies {
+    implementation("com.github.printSrcript:common:1.1.72")
+    implementation("com.github.printSrcript:libs:1.1.72")
+    implementation("com.github.printSrcript:factory:1.1.72")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     annotationProcessor("org.projectlombok:lombok")
