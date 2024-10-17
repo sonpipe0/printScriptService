@@ -27,7 +27,7 @@ jobs:
       - name: Build and push (latest-stable) for master
         if: github.ref == 'refs/heads/master'
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/printscript-service:latest-stable .
+          docker build --build-arg GPR_USER=${{github.actor}} --build-arg GPR_TOKEN=${{secrets.GHCR_PAT}} -t ${{ secrets.DOCKER_USERNAME }}/printscript-service:latest-stable .
           docker tag ${{ secrets.DOCKER_USERNAME }}/printscript-service:latest-stable ghcr.io/${{ github.repository_owner }}/printscript-service:latest-stable
           docker push ${{ secrets.DOCKER_USERNAME }}/printscript-service:latest-stable
           docker push ghcr.io/${{ github.repository_owner }}/printscript-service:latest-stable
@@ -35,7 +35,7 @@ jobs:
       - name: Build and push (latest-stable) for dev
         if: github.ref == 'refs/heads/dev'
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/printscript-service:latest-dev .
+          docker build --build-arg GPR_USER=${{github.actor}} --build-arg GPR_TOKEN=${{secrets.GHCR_PAT}}  -t ${{ secrets.DOCKER_USERNAME }}/printscript-service:latest-dev .
           docker tag ${{ secrets.DOCKER_USERNAME }}/printscript-service:latest-dev ghcr.io/${{ github.repository_owner }}/printscript-service:latest-dev
           docker push ${{ secrets.DOCKER_USERNAME }}/printscript-service:latest-dev
           docker push ghcr.io/${{ github.repository_owner }}/printscript-service:latest-dev

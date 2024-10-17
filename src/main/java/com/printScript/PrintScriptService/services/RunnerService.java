@@ -12,6 +12,7 @@ import utils.PercentageCollector;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -24,9 +25,9 @@ public class RunnerService {
         ValidatorFactory validator = new ValidatorFactory();
         PercentageCollector collector = new PercentageCollector();
         List<ParsingError> errorList = new ArrayList<>();
-        Sequence<ParsingResult> results = validator.validate(code, version, collector);
-        while (results.iterator().hasNext()) {
-            ParsingResult result = results.iterator().next();
+        Iterator<ParsingResult> results = validator.validate(code, version, collector).iterator();
+        while (results.hasNext()) {
+            ParsingResult result = results.next();
             if (result.hasError()) {
                 errorList.add(ParsingError.of(result.getError().getMessage()));
             }
