@@ -10,13 +10,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -27,15 +20,11 @@ jobs:
       - name: Build and push (latest-stable) for master
         if: github.ref == 'refs/heads/master'
         run: |
-          docker build --build-arg GPR_USER=${{github.actor}} --build-arg GPR_TOKEN=${{secrets.GHCR_PAT}} -t ${{ secrets.DOCKER_USERNAME }}/printscript-service:latest-stable .
-          docker tag ${{ secrets.DOCKER_USERNAME }}/printscript-service:latest-stable ghcr.io/${{ github.repository_owner }}/printscript-service:latest-stable
-          docker push ${{ secrets.DOCKER_USERNAME }}/printscript-service:latest-stable
+          docker build --secret id=gpr_user,src=/run/secrets/gpr_user --secret id=gpr_token,src=/run/secrets/gpr_token -t ghcr.io/${{ github.repository_owner }}/printscript-service:latest-stable .
           docker push ghcr.io/${{ github.repository_owner }}/printscript-service:latest-stable
 
       - name: Build and push (latest-stable) for dev
         if: github.ref == 'refs/heads/dev'
         run: |
-          docker build --build-arg GPR_USER=${{github.actor}} --build-arg GPR_TOKEN=${{secrets.GHCR_PAT}}  -t ${{ secrets.DOCKER_USERNAME }}/printscript-service:latest-dev .
-          docker tag ${{ secrets.DOCKER_USERNAME }}/printscript-service:latest-dev ghcr.io/${{ github.repository_owner }}/printscript-service:latest-dev
-          docker push ${{ secrets.DOCKER_USERNAME }}/printscript-service:latest-dev
+          docker build --secret id=gpr_user,src=/run/secrets/gpr_user --secret id=gpr_token,src=/run/secrets/gpr_token -t ghcr.io/${{ github.repository_owner }}/printscript-service:latest-dev .
           docker push ghcr.io/${{ github.repository_owner }}/printscript-service:latest-dev
