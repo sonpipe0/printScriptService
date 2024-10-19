@@ -1,11 +1,20 @@
 services:
   spring-app:
     build:
+      secrets:
+        - gpr_user
+        - gpr_token
       context: .
       dockerfile: Dockerfile
     container_name: print_script_service
     ports:
       - "5000:8080"
+
+secrets:
+  gpr_user:
+    environment: GPR_USER
+  gpr_token:
+    environment: GPR_TOKEN
 volumes:
     postgres_data:
 
