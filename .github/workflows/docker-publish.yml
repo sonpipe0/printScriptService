@@ -1,3 +1,5 @@
+name: Build and Push Docker Image
+
 on:
   push:
     branches:
@@ -19,12 +21,22 @@ jobs:
 
       - name: Build and push (latest-stable) for master
         if: github.ref == 'refs/heads/master'
-        run: |
-          docker build --secret id=gpr_user,src=/run/secrets/gpr_user --secret id=gpr_token,src=/run/secrets/gpr_token -t ghcr.io/${{ github.repository_owner }}/printscript-service:latest-stable .
-          docker push ghcr.io/${{ github.repository_owner }}/printscript-service:latest-stable
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/printscript-service:latest-stable
+          secrets: |
+            gpr_user=${{ github.actor }}
+            gpr_token=${{ secrets.GHCR_PAT }}
 
       - name: Build and push (latest-stable) for dev
         if: github.ref == 'refs/heads/dev'
-        run: |
-          docker build --secret id=gpr_user,src=/run/secrets/gpr_user --secret id=gpr_token,src=/run/secrets/gpr_token -t ghcr.io/${{ github.repository_owner }}/printscript-service:latest-dev .
-          docker push ghcr.io/${{ github.repository_owner }}/printscript-service:latest-dev
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/printscript-service:latest-dev
+          secrets: |
+            gpr_user=${{ github.actor }}
+            gpr_token=${{ secrets.GHCR_PAT }}
