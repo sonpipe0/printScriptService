@@ -1,11 +1,9 @@
 package com.printScript.PrintScriptService.services;
 
-
 import com.printScript.PrintScriptService.DTO.Response;
 import com.printScript.PrintScriptService.error.ParsingError;
 import dataObjects.ParsingResult;
 import factories.ValidatorFactory;
-import kotlin.sequences.Sequence;
 import org.springframework.stereotype.Service;
 import utils.PercentageCollector;
 
@@ -14,8 +12,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-
 
 @Service
 public class RunnerService {
