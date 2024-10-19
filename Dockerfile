@@ -7,5 +7,4 @@ RUN --mount=type=secret,id=gpr_user,env=USERNAME,required \
     --mount=type=secret,id=gpr_token,env=TOKEN,required \
     gradle build
 EXPOSE 8080
-CMD ["sh", "-c", "echo $USERNAME:$TOKEN should be empty"]
 ENTRYPOINT ["java", "-jar", "/home/gradle/src/build/libs/PrintScriptService-0.0.1-SNAPSHOT.jar"]
