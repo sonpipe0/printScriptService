@@ -1,17 +1,19 @@
 package com.printScript.PrintScriptService.services;
 
-import com.printScript.PrintScriptService.DTO.Response;
-import com.printScript.PrintScriptService.error.ParsingError;
-import dataObjects.ParsingResult;
-import factories.ValidatorFactory;
-import org.springframework.stereotype.Service;
-import utils.PercentageCollector;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.printScript.PrintScriptService.DTO.Response;
+import com.printScript.PrintScriptService.error.ParsingError;
+
+import dataObjects.ParsingResult;
+import factories.ValidatorFactory;
+import utils.PercentageCollector;
 
 @Service
 public class RunnerService {
