@@ -9,9 +9,12 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.printScript.PrintScriptService.DTO.Response;
+import com.printScript.PrintScriptService.error.LinterError;
 import com.printScript.PrintScriptService.error.ParsingError;
 
+import dataObjects.LinterResult;
 import dataObjects.ParsingResult;
+import factories.LinterFactory;
 import factories.ValidatorFactory;
 import utils.PercentageCollector;
 
@@ -28,6 +31,26 @@ public class RunnerService {
             ParsingResult result = results.next();
             if (result.hasError()) {
                 errorList.add(ParsingError.of(result.getError().getMessage()));
+            }
+        }
+        if (errorList.isEmpty()) {
+            return Response.withData(null);
+        } else {
+            return Response.withData(errorList);
+        }
+    }
+
+    public Response<List<LinterError>> getLintingErrors(String text, String version, String config) {
+        InputStream code = new ByteArrayInputStream(text.getBytes());
+        InputStream configStream = new ByteArrayInputStream(config.getBytes());
+        LinterFactory linter = new LinterFactory();
+        PercentageCollector collector = new PercentageCollector();
+        List<LinterError> errorList = new ArrayList<>();
+        Iterator<LinterResult> results = linter.lintCode(code, version, configStream, collector).iterator();
+        while (results.hasNext()) {
+            LinterResult result = results.next();
+            if (result.hasError()) {
+                errorList.add(LinterError.of(result.getMessage()));
             }
         }
         if (errorList.isEmpty()) {

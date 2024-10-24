@@ -11,8 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.printScript.PrintScriptService.DTO.LintRequestDTO;
 import com.printScript.PrintScriptService.DTO.Response;
 import com.printScript.PrintScriptService.DTO.ValidateRequestDTO;
+import com.printScript.PrintScriptService.error.LinterError;
 import com.printScript.PrintScriptService.error.ParsingError;
 import com.printScript.PrintScriptService.services.RunnerService;
 
@@ -42,6 +44,19 @@ public class RunnerController {
         Response<List<ParsingError>> response = runnerService.validate(code, version);
         if (response.getData() != null) {
             return new ResponseEntity<>(response.getData(), HttpStatus.EXPECTATION_FAILED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+    }
+
+    @GetMapping("/lintingErrors")
+    public ResponseEntity<Object> getLintingErrors(@RequestBody LintRequestDTO lintRequestDTO) {
+        String code = lintRequestDTO.getCode();
+        String version = lintRequestDTO.getVersion();
+        String config = lintRequestDTO.getConfig();
+        Response<List<LinterError>> response = runnerService.getLintingErrors(code, version, config);
+        if (response.getData() != null) {
+            return ResponseEntity.ok(response.getData());
         } else {
             return new ResponseEntity<>(HttpStatus.OK);
         }
