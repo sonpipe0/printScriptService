@@ -1,5 +1,7 @@
 package com.printScript.PrintScriptService.DTO;
 
+import java.io.InputStream;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,5 +13,5 @@ public class LintRequestDTO {
 
     private String version;
 
-    private String config;
+    private InputStream config;
 }
