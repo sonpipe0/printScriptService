@@ -11,10 +11,14 @@ import org.springframework.stereotype.Service;
 
 import com.printScript.PrintScriptService.DTO.Response;
 import com.printScript.PrintScriptService.error.Error;
+import com.printScript.PrintScriptService.error.LintingError;
 import com.printScript.PrintScriptService.error.ParsingError;
 
+import dataObjects.LinterResult;
 import dataObjects.ParsingResult;
+
 import factories.Runner;
+import factories.LinterFactory;
 import factories.ValidatorFactory;
 import utils.InterpreterResult;
 import utils.MainStringInputProvider;
@@ -43,6 +47,7 @@ public class RunnerService {
         }
     }
 
+
     public Response<List<String>> execute(String text, String version, List<String> inputs,
             Map<String, String> envVars) {
         InputStream code = new ByteArrayInputStream(text.getBytes());
@@ -60,5 +65,23 @@ public class RunnerService {
             }
         }
         return Response.withData(output);
+
+    public Response<List<LintingError>> getLintingErrors(String text, String version, InputStream config) {
+        InputStream code = new ByteArrayInputStream(text.getBytes());
+        LinterFactory linter = new LinterFactory();
+        PercentageCollector collector = new PercentageCollector();
+        List<LintingError> errorList = new ArrayList<>();
+        Iterator<LinterResult> results = linter.lintCode(code, version, config, collector).iterator();
+        while (results.hasNext()) {
+            LinterResult result = results.next();
+            if (result.hasError()) {
+                errorList.add(LintingError.of(result.getMessage()));
+            }
+        }
+        if (errorList.isEmpty()) {
+            return Response.withData(null);
+        } else {
+            return Response.withData(errorList);
+        }
     }
 }
