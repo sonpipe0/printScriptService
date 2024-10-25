@@ -16,9 +16,8 @@ import com.printScript.PrintScriptService.error.ParsingError;
 
 import dataObjects.LinterResult;
 import dataObjects.ParsingResult;
-
-import factories.Runner;
 import factories.LinterFactory;
+import factories.Runner;
 import factories.ValidatorFactory;
 import utils.InterpreterResult;
 import utils.MainStringInputProvider;
@@ -47,7 +46,6 @@ public class RunnerService {
         }
     }
 
-
     public Response<List<String>> execute(String text, String version, List<String> inputs,
             Map<String, String> envVars) {
         InputStream code = new ByteArrayInputStream(text.getBytes());
@@ -65,6 +63,7 @@ public class RunnerService {
             }
         }
         return Response.withData(output);
+    }
 
     public Response<List<LintingError>> getLintingErrors(String text, String version, InputStream config) {
         InputStream code = new ByteArrayInputStream(text.getBytes());
