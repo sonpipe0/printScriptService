@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: print_script_service
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${AUTH_SERVER_URI}
+          client-id: ${AUTH_CLIENT_ID}
+          client-secret: ${AUTH_CLIENT_SECRET}
+stream:
+  redis:
+    stream:
+      lint:
+        key: "lint"
+    consumer:
+      group: "print_script_service"
+auth0:
+  audience: ${AUTH0_AUDIENCE}
