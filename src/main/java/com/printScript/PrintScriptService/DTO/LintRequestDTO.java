@@ -1,7 +1,5 @@
 package com.printScript.PrintScriptService.DTO;
 
-import java.io.InputStream;
-
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,6 +12,4 @@ public class LintRequestDTO {
 
     @NotEmpty
     private String version;
-
-    private InputStream config;
 }

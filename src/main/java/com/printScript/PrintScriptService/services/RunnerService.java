@@ -7,12 +7,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import com.printScript.PrintScriptService.DTO.Response;
 import com.printScript.PrintScriptService.error.Error;
 import com.printScript.PrintScriptService.error.LintingError;
 import com.printScript.PrintScriptService.error.ParsingError;
+import com.printScript.PrintScriptService.web.BucketRequestExecutor;
 
 import dataObjects.LinterResult;
 import dataObjects.ParsingResult;
@@ -26,6 +30,9 @@ import utils.StringInputProvider;
 
 @Service
 public class RunnerService {
+
+    @Autowired
+    BucketRequestExecutor bucketRequestExecutor;
 
     public Response<List<ParsingError>> validate(String text, String version) {
         InputStream code = new ByteArrayInputStream(text.getBytes());
@@ -65,11 +72,18 @@ public class RunnerService {
         return Response.withData(output);
     }
 
-    public Response<List<LintingError>> getLintingErrors(String text, String version, InputStream config) {
+    public Response<Void> getLintingErrors(String text, String version, String userId, String token) {
         InputStream code = new ByteArrayInputStream(text.getBytes());
         LinterFactory linter = new LinterFactory();
         PercentageCollector collector = new PercentageCollector();
         List<LintingError> errorList = new ArrayList<>();
+        InputStream config = null;
+        try {
+            Response<String> response = bucketRequestExecutor.get("lint/" + userId, token);
+            config = new ByteArrayInputStream(response.getData().getBytes());
+        } catch (HttpClientErrorException e) {
+            return Response.withError(new Error(e.getStatusCode().value(), e.getResponseBodyAsString()));
+        }
         Iterator<LinterResult> results = linter.lintCode(code, version, config, collector).iterator();
         while (results.hasNext()) {
             LinterResult result = results.next();
@@ -80,7 +94,12 @@ public class RunnerService {
         if (errorList.isEmpty()) {
             return Response.withData(null);
         } else {
-            return Response.withData(errorList);
+            String errors = "[";
+            for (LintingError error : errorList) {
+                errors += "{\"message\":\"" + error.getMessage() + "\"},";
+            }
+            errors = errors.substring(0, errors.length() - 1) + "]";
+            return Response.withError(new Error(HttpStatus.EXPECTATION_FAILED.value(), errors));
         }
     }
 }

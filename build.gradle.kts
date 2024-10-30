@@ -42,10 +42,11 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.printSrcript:common:1.1.72")
-    implementation("com.github.printSrcript:libs:1.1.72")
-    implementation("com.github.printSrcript:factory:1.1.72")
+    implementation("com.github.printSrcript:common:1.1.73")
+    implementation("com.github.printSrcript:libs:1.1.73")
+    implementation("com.github.printSrcript:factory:1.1.73")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
     implementation("com.auth0:java-jwt:4.4.0")
     implementation("org.springframework.boot:spring-boot-starter-security")
