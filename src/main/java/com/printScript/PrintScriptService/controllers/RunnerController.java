@@ -1,6 +1,5 @@
 package com.printScript.PrintScriptService.controllers;
 
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -10,13 +9,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.printScript.PrintScriptService.DTO.ExecuteContextDTO;
-import com.printScript.PrintScriptService.DTO.LintRequestDTO;
 import com.printScript.PrintScriptService.DTO.Response;
 import com.printScript.PrintScriptService.DTO.TestContextDTO;
 import com.printScript.PrintScriptService.DTO.ValidateRequestDTO;
-import com.printScript.PrintScriptService.error.LintingError;
 import com.printScript.PrintScriptService.error.ParsingError;
 import com.printScript.PrintScriptService.services.RunnerService;
+import com.printScript.PrintScriptService.utils.TokenUtils;
 
 import jakarta.validation.constraints.NotNull;
 
@@ -81,14 +79,17 @@ public class RunnerController {
         }
     }
 
-    @GetMapping("/lintingErrors")
-    public ResponseEntity<Object> getLintingErrors(@RequestBody LintRequestDTO lintRequestDTO) {
-        String code = lintRequestDTO.getCode();
-        String version = lintRequestDTO.getVersion();
-        InputStream config = lintRequestDTO.getConfig();
-        Response<List<LintingError>> response = runnerService.getLintingErrors(code, version, config);
-        if (response.getData() != null) {
-            return ResponseEntity.ok(response.getData());
+    @PostMapping("/lintingErrors")
+    public ResponseEntity<Object> getLintingErrors(@RequestBody Map<String, String> body,
+            @RequestHeader Map<String, String> headers) {
+        String code = body.get("code");
+        String version = body.get("version");
+        String token = headers.get("authorization").substring(7);
+        Map<String, String> userInfo = TokenUtils.decodeToken(token);
+        String userId = userInfo.get("userId");
+        Response<Void> response = runnerService.getLintingErrors(code, version, userId, token);
+        if (response.isError()) {
+            return ResponseEntity.status(response.getError().code()).body(response.getError().message());
         } else {
             return new ResponseEntity<>(HttpStatus.OK);
         }
