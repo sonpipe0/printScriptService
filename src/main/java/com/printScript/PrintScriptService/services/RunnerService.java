@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
+import com.printScript.PrintScriptService.DTO.LintDTO;
 import com.printScript.PrintScriptService.DTO.Response;
 import com.printScript.PrintScriptService.error.Error;
 import com.printScript.PrintScriptService.error.LintingError;
@@ -72,19 +73,19 @@ public class RunnerService {
         return Response.withData(output);
     }
 
-    public Response<Void> getLintingErrors(String text, String version, String userId, String token) {
-        InputStream code = new ByteArrayInputStream(text.getBytes());
+    public Response<Void> getLintingErrors(LintDTO lintDTO, String userId, String token) {
+        InputStream code = new ByteArrayInputStream(lintDTO.getCode().getBytes());
         LinterFactory linter = new LinterFactory();
         PercentageCollector collector = new PercentageCollector();
         List<LintingError> errorList = new ArrayList<>();
-        InputStream config = null;
+        InputStream config;
         try {
             Response<String> response = bucketRequestExecutor.get("lint/" + userId, token);
             config = new ByteArrayInputStream(response.getData().getBytes());
         } catch (HttpClientErrorException e) {
             return Response.withError(new Error(e.getStatusCode().value(), e.getResponseBodyAsString()));
         }
-        Iterator<LinterResult> results = linter.lintCode(code, version, config, collector).iterator();
+        Iterator<LinterResult> results = linter.lintCode(code, lintDTO.getVersion(), config, collector).iterator();
         while (results.hasNext()) {
             LinterResult result = results.next();
             if (result.hasError()) {
