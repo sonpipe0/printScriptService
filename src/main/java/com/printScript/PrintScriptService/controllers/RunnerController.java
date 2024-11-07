@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import com.printScript.PrintScriptService.DTO.*;
 import com.printScript.PrintScriptService.error.ParsingError;
 import com.printScript.PrintScriptService.services.RunnerService;
-import com.printScript.PrintScriptService.utils.TokenUtils;
 
 import jakarta.validation.constraints.NotNull;
 
@@ -71,20 +70,6 @@ public class RunnerController {
         Response<List<ParsingError>> response = runnerService.validate(code, version);
         if (response.getData() != null) {
             return new ResponseEntity<>(response.getData(), HttpStatus.EXPECTATION_FAILED);
-        } else {
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-    }
-
-    @PostMapping("/lintingErrors")
-    public ResponseEntity<Object> getLintingErrors(@RequestBody LintDTO lintDTO,
-            @RequestHeader Map<String, String> headers) {
-        String token = headers.get("authorization").substring(7);
-        Map<String, String> userInfo = TokenUtils.decodeToken(token);
-        String userId = userInfo.get("userId");
-        Response<Void> response = runnerService.getLintingErrors(code, version, userId);
-        if (response.isError()) {
-            return ResponseEntity.status(response.getError().code()).body(response.getError().message());
         } else {
             return new ResponseEntity<>(HttpStatus.OK);
         }

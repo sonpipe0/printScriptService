@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
-import com.printScript.PrintScriptService.DTO.LintDTO;
 import com.printScript.PrintScriptService.DTO.Response;
 import com.printScript.PrintScriptService.error.Error;
 import com.printScript.PrintScriptService.error.LintingError;
@@ -78,7 +77,7 @@ public class RunnerService {
         return Response.withData(output);
     }
 
-public Response<Void> getLintingErrors(String text, String version, String userId) {
+    public Response<Void> getLintingErrors(String text, String version, String userId) {
         InputStream code = new ByteArrayInputStream(text.getBytes());
 
         LinterFactory linter = new LinterFactory();
@@ -91,7 +90,7 @@ public Response<Void> getLintingErrors(String text, String version, String userI
         } catch (HttpClientErrorException e) {
             return Response.withError(new Error(e.getStatusCode().value(), e.getResponseBodyAsString()));
         }
-        Iterator<LinterResult> results = linter.lintCode(code, lintDTO.getVersion(), config, collector).iterator();
+        Iterator<LinterResult> results = linter.lintCode(code, version, config, collector).iterator();
         while (results.hasNext()) {
             LinterResult result = results.next();
             if (result.hasError()) {
@@ -131,7 +130,6 @@ public Response<Void> getLintingErrors(String text, String version, String userI
         }
         writer.flush();
         String formattedCode = writer.toString();
-        logger.info("Formatted code: " + formattedCode);
 
         try {
             bucketRequestExecutor.put("formatted/" + snippetId, formattedCode, "");
