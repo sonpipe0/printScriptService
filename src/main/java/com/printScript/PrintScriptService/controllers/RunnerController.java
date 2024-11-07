@@ -8,10 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.printScript.PrintScriptService.DTO.ExecuteContextDTO;
-import com.printScript.PrintScriptService.DTO.Response;
-import com.printScript.PrintScriptService.DTO.TestContextDTO;
-import com.printScript.PrintScriptService.DTO.ValidateRequestDTO;
+import com.printScript.PrintScriptService.DTO.*;
 import com.printScript.PrintScriptService.error.ParsingError;
 import com.printScript.PrintScriptService.services.RunnerService;
 import com.printScript.PrintScriptService.utils.TokenUtils;
@@ -87,7 +84,7 @@ public class RunnerController {
         String token = headers.get("authorization").substring(7);
         Map<String, String> userInfo = TokenUtils.decodeToken(token);
         String userId = userInfo.get("userId");
-        Response<Void> response = runnerService.getLintingErrors(code, version, userId, token);
+        Response<Void> response = runnerService.getLintingErrors(code, version, userId);
         if (response.isError()) {
             return ResponseEntity.status(response.getError().code()).body(response.getError().message());
         } else {

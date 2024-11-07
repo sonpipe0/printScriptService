@@ -2,10 +2,12 @@ package com.printScript.PrintScriptService.services;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,7 @@ import com.printScript.PrintScriptService.web.BucketRequestExecutor;
 
 import dataObjects.LinterResult;
 import dataObjects.ParsingResult;
+import factories.FormatterFactory;
 import factories.LinterFactory;
 import factories.Runner;
 import factories.ValidatorFactory;
@@ -33,6 +36,8 @@ public class RunnerService {
 
     @Autowired
     BucketRequestExecutor bucketRequestExecutor;
+
+    private static Logger logger = Logger.getLogger(RunnerService.class.getName());
 
     public Response<List<ParsingError>> validate(String text, String version) {
         InputStream code = new ByteArrayInputStream(text.getBytes());
@@ -72,14 +77,14 @@ public class RunnerService {
         return Response.withData(output);
     }
 
-    public Response<Void> getLintingErrors(String text, String version, String userId, String token) {
+    public Response<Void> getLintingErrors(String text, String version, String userId) {
         InputStream code = new ByteArrayInputStream(text.getBytes());
         LinterFactory linter = new LinterFactory();
         PercentageCollector collector = new PercentageCollector();
         List<LintingError> errorList = new ArrayList<>();
         InputStream config = null;
         try {
-            Response<String> response = bucketRequestExecutor.get("lint/" + userId, token);
+            Response<String> response = bucketRequestExecutor.get("lint/" + userId, "");
             config = new ByteArrayInputStream(response.getData().getBytes());
         } catch (HttpClientErrorException e) {
             return Response.withError(new Error(e.getStatusCode().value(), e.getResponseBodyAsString()));
@@ -101,5 +106,37 @@ public class RunnerService {
             errors = errors.substring(0, errors.length() - 1) + "]";
             return Response.withError(new Error(HttpStatus.EXPECTATION_FAILED.value(), errors));
         }
+    }
+
+    public Response<Void> formatFile(String text, String version, String userId, String snippetId) {
+        InputStream code = new ByteArrayInputStream(text.getBytes());
+        LinterFactory linter = new LinterFactory();
+        PercentageCollector collector = new PercentageCollector();
+        List<LintingError> errorList = new ArrayList<>();
+        InputStream config = null;
+        try {
+            Response<String> response = bucketRequestExecutor.get("format/" + userId, "");
+            config = new ByteArrayInputStream(response.getData().getBytes());
+        } catch (HttpClientErrorException e) {
+            return Response.withError(new Error(e.getStatusCode().value(), e.getResponseBodyAsString()));
+        }
+        FormatterFactory formatter = new FormatterFactory();
+        StringWriter writer = new StringWriter();
+        try {
+            formatter.format(code, config, version, writer);
+        } catch (Exception e) {
+            return Response.withError(new Error(500, e.getMessage()));
+        }
+        writer.flush();
+        String formattedCode = writer.toString();
+        logger.info("Formatted code: " + formattedCode);
+
+        try {
+            bucketRequestExecutor.put("formatted/" + snippetId, formattedCode, "");
+        } catch (HttpClientErrorException e) {
+            return Response.withError(new Error(e.getStatusCode().value(), e.getResponseBodyAsString()));
+        }
+
+        return Response.withData(null);
     }
 }
