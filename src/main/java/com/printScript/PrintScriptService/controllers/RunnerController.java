@@ -77,10 +77,8 @@ public class RunnerController {
     }
 
     @PostMapping("/lintingErrors")
-    public ResponseEntity<Object> getLintingErrors(@RequestBody Map<String, String> body,
+    public ResponseEntity<Object> getLintingErrors(@RequestBody LintDTO lintDTO,
             @RequestHeader Map<String, String> headers) {
-        String code = body.get("code");
-        String version = body.get("version");
         String token = headers.get("authorization").substring(7);
         Map<String, String> userInfo = TokenUtils.decodeToken(token);
         String userId = userInfo.get("userId");
