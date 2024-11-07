@@ -131,7 +131,6 @@ public Response<Void> getLintingErrors(String text, String version, String userI
         }
         writer.flush();
         String formattedCode = writer.toString();
-        logger.info("Formatted code: " + formattedCode);
 
         try {
             bucketRequestExecutor.put("formatted/" + snippetId, formattedCode, "");
