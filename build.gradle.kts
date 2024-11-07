@@ -39,12 +39,21 @@ repositories {
             password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
         }
     }
+    maven{
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/sonpipe0/spring-serializer")
+        credentials {
+            username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
+            password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+        }
+    }
 }
 
 dependencies {
-    implementation("com.github.printSrcript:common:1.1.73")
-    implementation("com.github.printSrcript:libs:1.1.73")
-    implementation("com.github.printSrcript:factory:1.1.73")
+    implementation("org.printScript.microservices:serializer:1.0.15")
+    implementation("com.github.printSrcript:common:1.1.74")
+    implementation("com.github.printSrcript:libs:1.1.74")
+    implementation("com.github.printSrcript:factory:1.1.74")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")

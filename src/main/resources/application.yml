@@ -17,6 +17,8 @@ stream:
     stream:
       lint:
         key: "lint"
+      status:
+        key: "status"
     consumer:
       group: "print_script_service"
 auth0:
