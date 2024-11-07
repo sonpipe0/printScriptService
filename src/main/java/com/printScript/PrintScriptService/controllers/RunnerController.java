@@ -82,7 +82,7 @@ public class RunnerController {
         String token = headers.get("authorization").substring(7);
         Map<String, String> userInfo = TokenUtils.decodeToken(token);
         String userId = userInfo.get("userId");
-        Response<Void> response = runnerService.getLintingErrors(lintDTO, userId, token);
+        Response<Void> response = runnerService.getLintingErrors(code, version, userId);
         if (response.isError()) {
             return ResponseEntity.status(response.getError().code()).body(response.getError().message());
         } else {
