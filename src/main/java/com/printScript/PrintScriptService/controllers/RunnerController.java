@@ -1,7 +1,6 @@
 package com.printScript.PrintScriptService.controllers;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,23 +28,10 @@ public class RunnerController {
         return getObjectResponseEntity(version, code);
     }
 
-    @PostMapping("/execute")
-    public ResponseEntity<Object> execute(@RequestBody ExecuteContextDTO executeContextDTO) {
-        Response<List<String>> result = getExectutionResponse(executeContextDTO);
-
-        if (result.isError()) {
-            return ResponseEntity.status(result.getError().code()).body(result.getError().message());
-        } else {
-            return new ResponseEntity<>(result.getData(), HttpStatus.OK);
-        }
-    }
-
     @PostMapping("/test")
     public ResponseEntity<Object> executeTest(@RequestBody TestContextDTO testContextDTO) {
-        ExecuteContextDTO executeContextDTO = new ExecuteContextDTO(testContextDTO.getText(),
-                testContextDTO.getVersion(), testContextDTO.getInputs(), testContextDTO.getEnvVars());
-        Response<List<String>> result = getExectutionResponse(executeContextDTO);
-
+        Response<List<String>> result = runnerService.execute(testContextDTO.getSnippetId(),
+                testContextDTO.getVersion(), testContextDTO.getInputs());
         if (result.isError()) {
             return ResponseEntity.status(result.getError().code()).body(result.getError().message());
         }
@@ -54,15 +40,6 @@ public class RunnerController {
         } else {
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
-    }
-
-    private Response<List<String>> getExectutionResponse(ExecuteContextDTO executeContextDTO) {
-        String code = executeContextDTO.getText();
-        String version = executeContextDTO.getVersion();
-        List<String> inputs = executeContextDTO.getInputs();
-        Map<String, String> envVars = executeContextDTO.getEnvVars();
-        Response<List<String>> result = runnerService.execute(code, version, inputs, envVars);
-        return result;
     }
 
     @NotNull
