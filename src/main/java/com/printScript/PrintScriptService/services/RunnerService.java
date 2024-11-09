@@ -58,16 +58,12 @@ public class RunnerService {
         }
     }
 
-    public Response<List<String>> execute(String snippetId, String version, List<String> inputs) {
-        Response<String> response = bucketRequestExecutor.get("snippets/" + snippetId, "");
-        if (response.isError()) {
-            return Response.withError(response.getError());
-        }
-
-        InputStream code = new ByteArrayInputStream(response.getData().getBytes());
+    public Response<List<String>> execute(String text, String version, List<String> inputs,
+            Map<String, String> envVars) {
+        InputStream code = new ByteArrayInputStream(text.getBytes());
         StringInputProvider provider = new MainStringInputProvider(inputs.iterator());
         Runner runner = new Runner();
-        Iterator<InterpreterResult> results = runner.run(code, version, provider, Map.of(), false).iterator();
+        Iterator<InterpreterResult> results = runner.run(code, version, provider, envVars, false).iterator();
         List<String> output = new ArrayList<>();
         while (results.hasNext()) {
             InterpreterResult result = results.next();
