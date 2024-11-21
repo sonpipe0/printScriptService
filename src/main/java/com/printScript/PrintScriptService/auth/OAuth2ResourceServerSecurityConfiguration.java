@@ -5,6 +5,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -19,6 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
+@Profile("!test")
 public class OAuth2ResourceServerSecurityConfiguration {
 
     private final String audience;
@@ -39,8 +41,7 @@ public class OAuth2ResourceServerSecurityConfiguration {
                 .requestMatchers(HttpMethod.GET, "/swagger-ui/*").permitAll()
                 .requestMatchers(HttpMethod.GET, "/v3/api-docs").permitAll()
                 .requestMatchers(HttpMethod.GET, "/v3/api-docs/*").permitAll().anyRequest().authenticated())
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(withDefaults())).cors(AbstractHttpConfigurer::disable)
-                .csrf(AbstractHttpConfigurer::disable);
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(withDefaults())).csrf(AbstractHttpConfigurer::disable);
         return http.build();
     }
 
