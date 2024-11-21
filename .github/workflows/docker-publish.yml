@@ -76,9 +76,7 @@ jobs:
         run: |
           ssh -v -o StrictHostKeyChecking=no sonpipe@${{ secrets.VM_DEV_IP }} << 'ENDSSH'
           cd micro-infra
-          docker compose down printscript-service
-          docker compose pull printscript-service 
-          docker compose up -d printscript-service
+          bash update-dev.sh
           ENDSSH
 
       - name: Run Script on Azure VM Stable
@@ -86,7 +84,5 @@ jobs:
         run: |
           ssh -v -o StrictHostKeyChecking=no sonpipe@${{ secrets.VM_STABLE_IP }} << 'ENDSSH'
           cd micro-infra
-          docker compose down printscript-service
-          docker compose pull printscript-service 
-          docker compose up -d printscript-service
+          bash update-dev.sh
           ENDSSH

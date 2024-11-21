@@ -11,6 +11,8 @@ import com.printScript.PrintScriptService.DTO.*;
 import com.printScript.PrintScriptService.error.ParsingError;
 import com.printScript.PrintScriptService.services.RunnerService;
 
+import jakarta.validation.constraints.NotNull;
+
 @RestController
 @RequestMapping("/runner")
 public class RunnerController {
@@ -22,12 +24,8 @@ public class RunnerController {
     public ResponseEntity<Object> validate(@RequestBody ValidateRequestDTO validateRequestDTO) {
         String code = validateRequestDTO.getCode();
         String version = validateRequestDTO.getVersion();
-        Response<List<ParsingError>> response = runnerService.validate(code, version);
-        if (response.getData() != null) {
-            return new ResponseEntity<>(response.getData(), HttpStatus.EXPECTATION_FAILED);
-        } else {
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
+
+        return getObjectResponseEntity(version, code);
     }
 
     @PostMapping("/test")
@@ -41,6 +39,16 @@ public class RunnerController {
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    @NotNull
+    private ResponseEntity<Object> getObjectResponseEntity(@RequestParam("version") String version, String code) {
+        Response<List<ParsingError>> response = runnerService.validate(code, version);
+        if (response.getData() != null) {
+            return new ResponseEntity<>(response.getData(), HttpStatus.EXPECTATION_FAILED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.OK);
         }
     }
 }
