@@ -29,6 +29,7 @@ import com.printScript.PrintScriptService.DTO.Response;
 import com.printScript.PrintScriptService.TestSecurityConfig;
 import com.printScript.PrintScriptService.error.ParsingError;
 import com.printScript.PrintScriptService.redis.LintConsumer;
+import com.printScript.PrintScriptService.redis.FormatConsumer;
 import com.printScript.PrintScriptService.web.BucketRequestExecutor;
 
 import DTO.FormatConfigDTO;
@@ -50,6 +51,9 @@ public class RunnerServiceTest {
 
     @MockBean
     private LintConsumer lintConsumer;
+
+    @MockBean
+    private FormatConsumer formatConsumer;
 
     private String mockToken;
 
