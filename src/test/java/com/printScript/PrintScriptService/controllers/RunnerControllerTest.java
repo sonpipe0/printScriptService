@@ -30,6 +30,7 @@ import com.printScript.PrintScriptService.DTO.Response;
 import com.printScript.PrintScriptService.DTO.TestContextDTO;
 import com.printScript.PrintScriptService.DTO.ValidateRequestDTO;
 import com.printScript.PrintScriptService.TestSecurityConfig;
+import com.printScript.PrintScriptService.redis.FormatConsumer;
 import com.printScript.PrintScriptService.redis.LintConsumer;
 import com.printScript.PrintScriptService.services.RunnerService;
 
@@ -47,6 +48,9 @@ public class RunnerControllerTest {
 
     @MockBean
     private LintConsumer lintConsumer;
+
+    @MockBean
+    private FormatConsumer formatConsumer;
 
     private String mockToken;
 

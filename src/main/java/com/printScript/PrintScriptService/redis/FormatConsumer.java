@@ -34,8 +34,9 @@ public class FormatConsumer extends RedisStreamConsumer<ConfigPublishEvent> {
     @Autowired
     StatusProducerInterface statusProducer;
 
-    public FormatConsumer(RedisTemplate<String, String> redis, @Value("${stream.redis.stream.format.key}") String streamKey,
-                        @Value("${stream.redis.consumer.group}") String consumerGroup) {
+    public FormatConsumer(RedisTemplate<String, String> redis,
+            @Value("${stream.redis.stream.format.key}") String streamKey,
+            @Value("${stream.redis.consumer.group}") String consumerGroup) {
         super(streamKey, consumerGroup, redis);
     }
 
@@ -55,8 +56,8 @@ public class FormatConsumer extends RedisStreamConsumer<ConfigPublishEvent> {
         }
         boolean hasErrors = true;
 
-        Response<Void> formatFile = runnerService.formatFile(code.getData(), "1.1",
-                objectRecord.getValue().getUserId(), objectRecord.getValue().getSnippetId());
+        Response<Void> formatFile = runnerService.formatFile(code.getData(), "1.1", objectRecord.getValue().getUserId(),
+                objectRecord.getValue().getSnippetId());
         hasErrors = formatFile.isError();
 
         StatusPublishEvent statusPublishEvent = new StatusPublishEvent();
