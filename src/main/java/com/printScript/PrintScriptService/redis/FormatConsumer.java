@@ -54,6 +54,10 @@ public class FormatConsumer extends RedisStreamConsumer<ConfigPublishEvent> {
             logger.error("Error getting snippet code", e);
             return;
         }
+        if (code.isError()) {
+            logger.error("Error getting snippet code: {}", code.getError());
+            return;
+        }
         boolean hasErrors = true;
 
         Response<Void> formatFile = runnerService.formatFile(code.getData(), "1.1", objectRecord.getValue().getUserId(),
