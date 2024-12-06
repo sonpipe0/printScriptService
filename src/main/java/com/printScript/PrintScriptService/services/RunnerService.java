@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ import utils.MainStringInputProvider;
 import utils.PercentageCollector;
 import utils.StringInputProvider;
 
+@Slf4j
 @Service
 public class RunnerService {
 
@@ -40,6 +42,7 @@ public class RunnerService {
     private static Logger logger = Logger.getLogger(RunnerService.class.getName());
 
     public Response<List<ParsingError>> validate(String text, String version) {
+        logger.info("validate was called");
         InputStream code = new ByteArrayInputStream(text.getBytes());
         ValidatorFactory validator = new ValidatorFactory();
         PercentageCollector collector = new PercentageCollector();
@@ -59,6 +62,7 @@ public class RunnerService {
     }
 
     public Response<List<String>> execute(String snippetId, String version, List<String> inputs) {
+        logger.info("execute was called");
         Response<String> response = bucketRequestExecutor.get("snippets/" + snippetId, "");
         if (response.isError()) {
             return Response.withError(response.getError());
@@ -82,6 +86,7 @@ public class RunnerService {
     }
 
     public Response<Void> getLintingErrors(String text, String version, String userId) {
+        logger.info("getLintingErrors was called");
         InputStream code = new ByteArrayInputStream(text.getBytes());
 
         LinterFactory linter = new LinterFactory();
@@ -114,6 +119,7 @@ public class RunnerService {
     }
 
     public Response<Void> formatFile(String text, String version, String userId, String snippetId) {
+        logger.info("formatFile was called");
         InputStream code = new ByteArrayInputStream(text.getBytes());
         LinterFactory linter = new LinterFactory();
         PercentageCollector collector = new PercentageCollector();
