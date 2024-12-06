@@ -21,9 +21,9 @@ import events.ConfigPublishEvent;
 import events.StatusPublishEvent;
 
 @Component
-public class LintConsumer extends RedisStreamConsumer<ConfigPublishEvent> {
+public class FormatConsumer extends RedisStreamConsumer<ConfigPublishEvent> {
 
-    private static final Logger logger = LoggerFactory.getLogger(LintConsumer.class);
+    private static final Logger logger = LoggerFactory.getLogger(FormatConsumer.class);
 
     @Autowired
     RunnerService runnerService;
@@ -34,7 +34,8 @@ public class LintConsumer extends RedisStreamConsumer<ConfigPublishEvent> {
     @Autowired
     StatusProducerInterface statusProducer;
 
-    public LintConsumer(RedisTemplate<String, String> redis, @Value("${stream.redis.stream.lint.key}") String streamKey,
+    public FormatConsumer(RedisTemplate<String, String> redis,
+            @Value("${stream.redis.stream.format.key}") String streamKey,
             @Value("${stream.redis.consumer.group}") String consumerGroup) {
         super(streamKey, consumerGroup, redis);
     }
@@ -59,9 +60,9 @@ public class LintConsumer extends RedisStreamConsumer<ConfigPublishEvent> {
         }
         boolean hasErrors = true;
 
-        Response<Void> getLintingErrors = runnerService.getLintingErrors(code.getData(), "1.1",
-                objectRecord.getValue().getUserId());
-        hasErrors = getLintingErrors.isError();
+        Response<Void> formatFile = runnerService.formatFile(code.getData(), "1.1", objectRecord.getValue().getUserId(),
+                objectRecord.getValue().getSnippetId());
+        hasErrors = formatFile.isError();
 
         StatusPublishEvent statusPublishEvent = new StatusPublishEvent();
         statusPublishEvent.setSnippetId(objectRecord.getValue().getSnippetId());

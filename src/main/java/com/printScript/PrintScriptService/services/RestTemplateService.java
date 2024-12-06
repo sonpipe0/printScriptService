@@ -1,5 +1,7 @@
 package com.printScript.PrintScriptService.services;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -8,11 +10,14 @@ import org.springframework.web.client.RestTemplate;
 public class RestTemplateService {
     private RestTemplate restTemplate;
 
+    private final Logger log = LoggerFactory.getLogger(RestTemplateService.class);
+
     private final String permissionsUrl;
     private final String snippetUrl;
     private final String bucketUrl;
 
     public RestTemplateService(RestTemplateBuilder restTemplateBuilder) {
+        log.info("RestTemplateService was created");
         this.permissionsUrl = System.getenv("PERMISSIONS_SERVICE_URL");
         this.snippetUrl = System.getenv("SNIPPET_SERVICE_URL");
         this.bucketUrl = System.getenv("BUCKET_SERVICE_URL");
@@ -20,16 +25,19 @@ public class RestTemplateService {
     }
 
     public RestTemplateService permissionsRestTemplate(RestTemplateBuilder restTemplateBuilder) {
+        log.info("permissionsRestTemplate was called");
         this.restTemplate = restTemplateBuilder.rootUri(permissionsUrl).build();
         return this;
     }
 
     public RestTemplateService snippetRestTemplate(RestTemplateBuilder restTemplateBuilder) {
+        log.info("snippetRestTemplate was called");
         this.restTemplate = restTemplateBuilder.rootUri(snippetUrl).build();
         return this;
     }
 
     public RestTemplateService bucketRestTemplate(RestTemplateBuilder restTemplateBuilder) {
+        log.info("bucketRestTemplate was called");
         this.restTemplate = restTemplateBuilder.rootUri(bucketUrl).build();
         return this;
     }
