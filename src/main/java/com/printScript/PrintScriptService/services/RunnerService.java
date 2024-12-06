@@ -7,8 +7,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -37,9 +38,10 @@ public class RunnerService {
     @Autowired
     BucketRequestExecutor bucketRequestExecutor;
 
-    private static Logger logger = Logger.getLogger(RunnerService.class.getName());
+    private final Logger log = LoggerFactory.getLogger(RunnerService.class);
 
     public Response<List<ParsingError>> validate(String text, String version) {
+        log.info("validate was called");
         InputStream code = new ByteArrayInputStream(text.getBytes());
         ValidatorFactory validator = new ValidatorFactory();
         PercentageCollector collector = new PercentageCollector();
@@ -59,6 +61,7 @@ public class RunnerService {
     }
 
     public Response<List<String>> execute(String snippetId, String version, List<String> inputs) {
+        log.info("execute was called");
         Response<String> response = bucketRequestExecutor.get("snippets/" + snippetId, "");
         if (response.isError()) {
             return Response.withError(response.getError());
@@ -82,6 +85,7 @@ public class RunnerService {
     }
 
     public Response<Void> getLintingErrors(String text, String version, String userId) {
+        log.info("getLintingErrors was called");
         InputStream code = new ByteArrayInputStream(text.getBytes());
 
         LinterFactory linter = new LinterFactory();
@@ -114,6 +118,7 @@ public class RunnerService {
     }
 
     public Response<Void> formatFile(String text, String version, String userId, String snippetId) {
+        log.info("formatFile was called");
         InputStream code = new ByteArrayInputStream(text.getBytes());
         LinterFactory linter = new LinterFactory();
         PercentageCollector collector = new PercentageCollector();
